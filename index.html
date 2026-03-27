@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Favorite Kurumbi 💖</title>
+    <!-- Beautiful Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        /* =========================================
+           VARIABLES & RESET
+        ========================================= */
+        :root {
+            --bg-pink: #fff0f3;
+            --bg-blue: #e0fbfc;
+            --bg-purple: #f3e8ff;
+            --bg-night: #1a1a2e;
+            --text-main: #2b2d42;
+            --text-accent: #ff4d6d;
+            --btn-yes: #ff758f;
+            --btn-no: #8d99ae;
+            --font-main: 'Nunito', sans-serif;
+            --font-cursive: 'Pacifico', cursive;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg-pink);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow: hidden;
+            height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+            transition: background 1.5s ease-in-out;
+        }
+
+        /* =========================================
+           CORE LAYOUT & SCREENS
+        ========================================= */
+        #app-container {
+            width: 100%; max-width: 600px; height: 100%;
+            position: relative; display: flex; justify-content: center; align-items: center;
+        }
+
+        .screen {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 2rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 1s ease, transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: scale(0.95) translateY(20px);
+            z-index: 1;
+        }
+
+        .screen.active {
+            opacity: 1; pointer-events: auto;
+            transform: scale(1) translateY(0);
+            z-index: 10;
+        }
+
+        /* =========================================
+           TYPOGRAPHY & BUTTONS
+        ========================================= */
+        h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); margin-bottom: 1rem; font-weight: 900; line-height: 1.2; color: var(--text-main); }
+        h1.cursive { font-family: var(--font-cursive); color: var(--text-accent); font-weight: 400; letter-spacing: 2px; }
+        p { font-size: clamp(1.1rem, 4vw, 1.3rem); margin-bottom: 1.5rem; line-height: 1.6; font-weight: 600; }
+        
+        .tease-text { color: #d90429; font-style: italic; font-weight: 800; font-size: 1.1rem; }
+        .flirt-text { color: #c9184a; font-weight: 800; }
+
+        .btn {
+            background-color: var(--btn-yes); color: white; border: none;
+            padding: 15px 35px; font-size: 1.2rem; font-family: var(--font-main); font-weight: 900;
+            border-radius: 50px; cursor: pointer; box-shadow: 0 10px 25px rgba(255, 117, 143, 0.4);
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 10px;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-alt { background-color: var(--btn-no); box-shadow: 0 10px 25px rgba(141, 153, 174, 0.4); }
+
+        .btn-group { display: flex; gap: 15px; justify-content: center; width: 100%; position: relative; margin-top: 20px;}
+        #btn-no { position: relative; z-index: 100; }
+
+        /* =========================================
+           ANIMATIONS
+        ========================================= */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } }
+        @keyframes squeeze { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.95) scaleY(1.02); } }
+        @keyframes tearDrop { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(30px); opacity: 0; } }
+        @keyframes blushPulse { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.3); } }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+
+        .floating { animation: float 3s ease-in-out infinite; }
+        .beating { animation: heartbeat 1.5s infinite; }
+        .squeezing { animation: squeeze 2.5s ease-in-out infinite; }
+        .blushing-effect { animation: blushPulse 2s ease-in-out infinite; transform-origin: center; }
+        .twinkling { animation: twinkle 2s ease-in-out infinite; }
+
+        /* =========================================
+           SVG CARTOONS & SPECIFIC UI
+        ========================================= */
+        .svg-icon { width: 220px; height: 220px; margin-bottom: 20px; }
+        
+        /* Glassmorphism Letter */
+        .letter-box {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            text-align: left;
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .letter-line { opacity: 0; transform: translateY(15px); transition: all 1s ease; margin-bottom: 12px; font-size: 1.15rem; }
+        .letter-line.show { opacity: 1; transform: translateY(0); }
+
+        /* Massive Hug Container */
+        .fullscreen-hug {
+            width: 100vw; height: 50vh;
+            max-width: 500px; margin: 0 auto 20px auto;
+            position: relative;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+
+        <!-- SCREEN 1: THE ENVELOPE -->
+        <div class="screen active" id="s1">
+            <svg class="svg-icon floating" viewBox="0 0 200 200" onclick="nextScreen('s2', 'var(--bg-blue)')" style="cursor:pointer;">
+                <rect x="90" y="120" width="20" height="80" fill="#8d99ae"/>
+                <path d="M 40 120 L 160 120 L 160 70 A 60 60 0 0 0 40 70 Z" fill="#ff4d6d"/>
+                <path d="M 160 90 L 180 90 L 180 50 L 160 50 Z" fill="#ef233c" class="beating"/>
+                <circle cx="160" cy="90" r="5" fill="#2b2d42"/>
+                <rect x="60" y="50" width="80" height="40" fill="#fff" transform="rotate(-15 100 70)"/>
+                <path d="M 60 65 L 100 80 L 140 65" fill="none" stroke="#ffb3c6" stroke-width="3" transform="rotate(-15 100 70)"/>
+                <path d="M 100 95 C 100 95, 85 80, 85 70 C 85 63, 93 63, 97 70 C 101 63, 109 63, 109 70 C 109 80, 100 95, 100 95 Z" fill="#fff"/>
+            </svg>
+            <h1>Delivery for my Kurumbi 💌</h1>
+            <p>A highly confidential, extremely squishy message for the biggest troublemaker in my life.</p>
+            <p class="tease-text">(Tap the mailbox, don't just stare at it)</p>
+        </div>
+
+        <!-- SCREEN 2: THE TEASE (CHEEK SQUISH WITH BLUSH) -->
+        <div class="screen" id="s2">
+            <svg class="svg-icon floating" viewBox="0 0 200 200">
+                <circle cx="100" cy="110" r="60" fill="#ffe6e6"/>
+                <path d="M 40 110 Q 10 110 40 130" fill="#ffe6e6"/>
+                <ellipse cx="65" cy="120" rx="15" ry="10" fill="#ff4d6d" class="blushing-effect"/>
+                <ellipse cx="135" cy="120" rx="15" ry="10" fill="#ff4d6d" class="blushing-effect"/>
+                <line x1="75" y1="95" x2="90" y2="100" stroke="#2b2d42" stroke-width="4" stroke-linecap="round"/>
+                <line x1="125" y1="95" x2="110" y2="100" stroke="#2b2d42" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 90 125 Q 100 115 110 125" fill="none" stroke="#2b2d42" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 0 160 Q 20 120 30 115 Q 40 105 50 115 Q 45 130 15 170" fill="#ffcdb2" stroke="#ef233c" stroke-width="2"/>
+                <path d="M 135 70 L 145 70 L 145 80 M 145 70 L 155 60" fill="none" stroke="#ef233c" stroke-width="3"/>
+            </svg>
+            <h1>Hold still...</h1>
+            <p>I just needed to digitally squish these chubby cheeks. You've been acting like a grumpy little potato lately. 🥔</p>
+            <p class="tease-text">Stop trying to hide that smile, Ponne I can literally see you blushing right now.</p>
+            <button class="btn btn-alt" onclick="nextScreen('s3', 'var(--bg-purple)')">OKAY, OKAY, NEXT</button>
+        </div>
+
+        <!-- SCREEN 3: THE MAP / DISTANCE -->
+        <div class="screen" id="s3">
+            <svg class="svg-icon floating" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="80" fill="#e0fbfc" stroke="#8d99ae" stroke-width="4"/>
+                <path d="M 40 80 Q 60 40 90 60 Q 110 80 80 120 Q 50 140 40 80 Z" fill="#81b29a" opacity="0.6"/>
+                <path d="M 140 60 Q 170 80 150 130 Q 120 160 110 120 Q 100 80 140 60 Z" fill="#81b29a" opacity="0.6"/>
+                <path d="M 60 70 C 60 50, 80 50, 80 70 L 70 90 Z" fill="#ff4d6d"/>
+                <circle cx="70" cy="65" r="4" fill="#fff"/>
+                <path d="M 130 110 C 130 90, 150 90, 150 110 L 140 130 Z" fill="#ff4d6d"/>
+                <circle cx="140" cy="105" r="4" fill="#fff"/>
+                <path d="M 70 90 Q 100 50 140 105" fill="none" stroke="#2b2d42" stroke-width="3" stroke-dasharray="6,6"/>
+                <path d="M 105 75 C 105 75, 95 65, 95 60 C 95 55, 102 55, 105 60 C 108 55, 115 55, 115 60 C 115 65, 105 75, 105 75 Z" fill="#ef233c" class="beating"/>
+            </svg>
+            <h1>Distance is so stupid.</h1>
+            <p>I hate that I can't just pull you by the waist and kiss you right now.</p>
+            <p>But the miles mean absolutely nothing when you are my everything.</p>
+            <button class="btn" onclick="showLetter()">READ MY NOTE</button>
+        </div>
+
+        <!-- SCREEN 4: THE PERSONALIZED LETTER (DEEP EMOTION) -->
+        <div class="screen" id="s4">
+            <h1 class="cursive" style="font-size: 2.5rem;">For my favorite girl...</h1>
+            <div class="letter-box" id="letter-content">
+                <p class="letter-line">Hey Kurumbi,</p>
+                <p class="letter-line">I know the distance gets heavy sometimes. I know you miss me.</p>
+                <p class="letter-line flirt-text">But I swear, I could stare into your gorgeous eyes for hours and still get butterflies every single time. 🥺</p>
+                <p class="letter-line">Whenever you feel lonely, I need you to close your eyes and remember...</p>
+                <p class="letter-line" style="color: var(--text-accent); font-weight: 900; font-size: 1.3rem;">No matter how far we are, my heart is right there next to yours.</p>
+                <p class="letter-line">Holding your hand. Making you laugh. And silently admiring how perfect you are.</p>
+                <p class="letter-line">You are my safe place, my peace, and my entire world.</p>
+                <p class="letter-line flirt-text" style="font-size: 1.25rem;">I miss you, Ponn. I love you so much penne.</p>
+            </div>
+            <button class="btn btn-alt" style="opacity:0; transition: opacity 1s;" id="btn-after-letter" onclick="nextScreen('s5', 'var(--bg-pink)')">I HAVE A SURPRISE FOR YOU</button>
+        </div>
+
+        <!-- SCREEN 5: THE MASSIVE HUG -->
+        <div class="screen" id="s5">
+            <div class="fullscreen-hug squeezing">
+                <svg width="100%" height="100%" viewBox="0 0 400 400">
+                    <circle cx="200" cy="220" r="140" fill="#fff" opacity="0.4" class="beating"/>
+                    
+                    <rect x="130" y="160" width="140" height="240" rx="70" fill="#8d99ae"/>
+                    <circle cx="150" cy="110" r="25" fill="#8d99ae"/>
+                    <circle cx="250" cy="110" r="25" fill="#8d99ae"/>
+                    <circle cx="200" cy="140" r="70" fill="#8d99ae"/>
+                    <path d="M 175 125 Q 185 135 195 125" fill="none" stroke="#2b2d42" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M 205 125 Q 215 135 225 125" fill="none" stroke="#2b2d42" stroke-width="4" stroke-linecap="round"/>
+                    <ellipse cx="170" cy="145" rx="10" ry="6" fill="#ffb3c6" opacity="0.6"/>
+                    <ellipse cx="230" cy="145" rx="10" ry="6" fill="#ffb3c6" opacity="0.6"/>
+
+                    <g style="transform-origin: 200px 220px;" class="floating">
+                        <ellipse cx="180" cy="170" rx="12" ry="40" fill="#ffe6ea" transform="rotate(-20 180 170)"/>
+                        <ellipse cx="220" cy="170" rx="12" ry="40" fill="#ffe6ea" transform="rotate(20 220 170)"/>
+                        <rect x="160" y="220" width="80" height="150" rx="40" fill="#ffe6ea"/>
+                        <circle cx="200" cy="220" r="45" fill="#ffe6ea"/>
+                        <path d="M 185 210 Q 190 205 195 210" fill="none" stroke="#2b2d42" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M 205 210 Q 210 205 215 210" fill="none" stroke="#2b2d42" stroke-width="3" stroke-linecap="round"/>
+                        <ellipse cx="175" cy="220" rx="12" ry="7" fill="#ff4d6d" class="blushing-effect"/>
+                        <ellipse cx="225" cy="220" rx="12" ry="7" fill="#ff4d6d" class="blushing-effect"/>
+                        <path d="M 195 225 Q 200 230 205 225" fill="none" stroke="#2b2d42" stroke-width="2" stroke-linecap="round"/>
+                    </g>
+
+                    <path d="M 140 180 C 100 250, 150 300, 200 280" fill="none" stroke="#7b879c" stroke-width="35" stroke-linecap="round"/>
+                    <path d="M 260 180 C 300 250, 250 300, 200 280" fill="none" stroke="#7b879c" stroke-width="35" stroke-linecap="round"/>
+
+                    <g class="floating">
+                        <path d="M 100 100 C 100 100, 80 80, 80 65 C 80 55, 95 55, 100 65 C 105 55, 120 55, 120 65 C 120 80, 100 100, 100 100 Z" fill="#ff4d6d"/>
+                    </g>
+                    <g class="floating" style="animation-delay: 1s;">
+                        <path d="M 300 140 C 300 140, 285 125, 285 115 C 285 108, 295 108, 300 115 C 305 108, 315 108, 315 115 C 315 125, 300 140, 300 140 Z" fill="#ff4d6d"/>
+                    </g>
+                </svg>
+            </div>
+            <h1 class="cursive" style="font-size: 2.8rem; margin-top: -20px;">Incoming Bear Hug! 🐻</h1>
+            <p>Imagine me wrapping my big arms around you exactly like this. You are safe. You are mine. Now stop wiggling.</p>
+            <button class="btn" onclick="nextScreen('s6', 'var(--bg-blue)')">I LOVE IT 🥺</button>
+        </div>
+
+        <!-- SCREEN 6: THE TRAP (TEASING) -->
+        <div class="screen" id="s6">
+            <svg id="smirk-svg" class="svg-icon floating" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="80" fill="#ffe6ea" stroke="#ffb3c6" stroke-width="6"/>
+                <path d="M 60 85 Q 80 75 95 85" fill="none" stroke="#2b2d42" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 105 85 Q 120 75 140 85" fill="none" stroke="#2b2d42" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="75" cy="105" r="6" fill="#2b2d42"/>
+                <circle cx="125" cy="105" r="6" fill="#2b2d42"/>
+                <path d="M 80 135 Q 110 150 130 130" fill="none" stroke="#2b2d42" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 130 130 Q 140 120 145 115" fill="none" stroke="#2b2d42" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+
+            <svg id="cry-svg" class="svg-icon" viewBox="0 0 200 200" style="display:none; animation: float 0.3s infinite;">
+                <circle cx="100" cy="100" r="80" fill="#e0fbfc" stroke="#90e0ef" stroke-width="6"/>
+                <path d="M 60 95 Q 75 80 90 95" fill="none" stroke="#2b2d42" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 110 95 Q 125 80 140 95" fill="none" stroke="#2b2d42" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 75 145 Q 100 125 125 145" fill="none" stroke="#2b2d42" stroke-width="6" stroke-linecap="round"/>
+                <ellipse cx="75" cy="115" rx="6" ry="10" fill="#00b4d8" style="animation: tearDrop 0.8s infinite;"/>
+                <ellipse cx="125" cy="115" rx="6" ry="10" fill="#00b4d8" style="animation: tearDrop 0.8s infinite 0.4s;"/>
+            </svg>
+
+            <h1 id="q-title">Now... Truth Time.</h1>
+            <p id="q-desc">After all this cute stuff... do you love me, Chakare? 👀</p>
+
+            <div class="btn-group">
+                <button class="btn" onclick="celebrate()">YES, I DO! 🥰</button>
+                <button class="btn btn-alt" id="btn-no">NO WAY 😒</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 7: THE CELEBRATION -->
+        <div class="screen" id="s7">
+            <svg class="svg-icon beating" style="width: 250px; height: 250px;" viewBox="0 0 200 200">
+                <path d="M 100 180 C 100 180, 10 110, 10 50 C 10 15, 80 10, 100 50 C 120 10, 190 15, 190 50 C 190 110, 100 180, 100 180 Z" fill="#ff4d6d"/>
+                <path d="M 40 50 Q 55 25 75 40" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+            </svg>
+            <h1 class="cursive" style="font-size: 3.5rem;">I KNEW IT!!! 🎉</h1>
+            <p style="font-size: 1.6rem; font-weight: 900; color: var(--text-accent);">I love you too, my Ponn! ❤️</p>
+            <button class="btn btn-alt" onclick="nextScreen('s8', 'var(--bg-night)')" style="margin-top: 30px;">Wait, one more thing...</button>
+        </div>
+
+        <!-- SCREEN 8: THE TRUE ENDING (NIGHT SKY & ROMANTIC MESSAGE) -->
+        <div class="screen" id="s8">
+            <!-- Glowing Moon & Twinkling Stars -->
+            <svg class="svg-icon floating" viewBox="0 0 200 200" style="width: 150px; height: 150px;">
+                <path d="M 120 40 A 50 50 0 1 0 140 120 A 70 70 0 0 1 120 40 Z" fill="#fbd28b" class="beating"/>
+                <path d="M 40 60 L 45 75 L 60 80 L 45 85 L 40 100 L 35 85 L 20 80 L 35 75 Z" fill="#fff" class="twinkling"/>
+                <path d="M 160 140 L 163 150 L 175 153 L 163 156 L 160 166 L 157 156 L 145 153 L 157 150 Z" fill="#fff" class="twinkling" style="animation-delay: 1s;"/>
+                <path d="M 170 30 L 172 38 L 180 40 L 172 42 L 170 50 L 168 42 L 160 40 L 168 38 Z" fill="#fff" class="twinkling" style="animation-delay: 0.5s;"/>
+            </svg>
+
+            <!-- User's Custom Deep Text styled perfectly for dark mode -->
+            <h1 class="cursive" style="color: #ffc2d4; font-size: clamp(2.5rem, 8vw, 3.5rem); margin-bottom: 5px;"> Kurup + Kurumbi</h1>
+            <h2 style="color: rgba(255,255,255,0.85); font-family: var(--font-main); font-weight: 400; font-size: clamp(1.4rem, 5vw, 2rem); margin-bottom: 25px;">= Always & Forever</h2>
+            
+            <p style="color: rgba(255,255,255,0.9); font-size: clamp(1.1rem, 4vw, 1.3rem); line-height: 1.8;">
+                No matter the distance.<br>No matter the place.<br>No matter what life throws at us.
+            </p>
+            
+            <p style="margin-top: 20px;">
+                <strong style="color: #ffc2d4; font-size: clamp(1.3rem, 5vw, 1.5rem); font-weight: 900; line-height: 1.6;">
+                    I choose you. Every single day.<br>I love you too, Ponne. Always.
+                </strong>
+            </p>
+            
+            <p style="color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-top: 30px; letter-spacing: 2px;">
+                ∞ Forever & Annoyingly Yours ∞
+            </p>
+            
+            <button class="btn" style="background: rgba(255,194,212,0.2); color: #ffc2d4; border: 2px solid #ffc2d4; margin-top: 20px; box-shadow: none;" onclick="location.reload()">Replay From Start 💕</button>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * Core Navigation Logic
+         */
+        function nextScreen(targetId, bgColor) {
+            if (bgColor) document.body.style.background = bgColor;
+
+            const current = document.querySelector('.screen.active');
+            if (current) current.classList.remove('active');
+            
+            const target = document.getElementById(targetId);
+            if (target) target.classList.add('active');
+        }
+
+        /**
+         * Letter Revealing Logic (Slow, Emotional Pacing)
+         */
+        function showLetter() {
+            nextScreen('s4', '#ffffff');
+            const lines = document.querySelectorAll('.letter-line');
+            const btn = document.getElementById('btn-after-letter');
+            
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    line.classList.add('show');
+                }, 1500 * (index + 1)); 
+            });
+
+            setTimeout(() => {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            }, 1500 * (lines.length + 1));
+        }
+
+        /**
+         * The Teasing Trap Game ("Catch Me If You Can")
+         */
+        const btnNo = document.getElementById('btn-no');
+        const qTitle = document.getElementById('q-title');
+        const qDesc = document.getElementById('q-desc');
+        const smirkSvg = document.getElementById('smirk-svg');
+        const crySvg = document.getElementById('cry-svg');
+
+        const phrases = [
+            "Wait, what?! 😭",
+            "Are you seriously trying to hit NO?!",
+            "Ouch! After I literally just poured my heart out?! 💔",
+            "Nuh-uh! Catch me if you can, Ponn! 🏃‍♂️💨",
+            "You are being a total menace right now! 😭",
+            "Stop fighting it! Just click YES and let me love you! 🥺",
+            "My love is way too fast for your little fingers!"
+        ];
+        let hoverCount = 0;
+
+        function evade(e) {
+            e.preventDefault();
+
+            smirkSvg.style.display = 'none';
+            crySvg.style.display = 'block';
+            document.body.style.background = '#e0fbfc';
+            
+            qTitle.innerText = "OH SO YOU HATE ME?!";
+            qTitle.style.color = "#d90429";
+            qDesc.innerText = phrases[hoverCount % phrases.length];
+            hoverCount++;
+
+            const container = document.getElementById('app-container');
+            const padding = 30;
+            const maxX = container.offsetWidth - btnNo.offsetWidth - padding;
+            const maxY = container.offsetHeight - btnNo.offsetHeight - 120;
+
+            const randomX = (Math.random() - 0.5) * maxX;
+            const randomY = (Math.random() - 0.5) * maxY;
+
+            btnNo.style.position = 'absolute';
+            btnNo.style.transition = 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)';
+            btnNo.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        btnNo.addEventListener('mouseover', evade);
+        btnNo.addEventListener('touchstart', evade);
+
+        btnNo.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("Okay ninja, you caught it... but I still love you 😭");
+        });
+
+        /**
+         * Celebrate Function (When she clicks YES)
+         */
+        function celebrate() {
+            nextScreen('s7', '#fff0f3');
+
+            var duration = 4 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+                }));
+            }, 250);
+        }
+
+    </script>
+</body>
+</html>
